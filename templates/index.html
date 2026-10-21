@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HeartWise | ML Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-icon">♥</span><span>heart<span class="brand-light">wise</span></span></a>
+    <div class="top-pill"><span class="status-dot"></span> MACHINE LEARNING DEMO</div>
+  </header>
+
+  <main class="page-wrap">
+    <section class="hero">
+      <div class="eyebrow"><span class="eyebrow-line"></span> HEALTH DATA · MACHINE LEARNING</div>
+      <h1>Understand the data.<br><span>Explore the prediction.</span></h1>
+      <p class="hero-copy">An educational machine learning project showing how a classification model processes selected health-related inputs.</p>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-icon">✦</span><div><strong>Random Forest</strong><small>ML algorithm</small></div></div>
+        <div class="stat"><span class="stat-icon">⌘</span><div><strong>13 data features</strong><small>UCI Cleveland dataset</small></div></div>
+        <div class="stat"><span class="stat-icon">◈</span><div><strong>No database</strong><small>Runs locally</small></div></div>
+      </div>
+    </section>
+
+    {% if not model_ready %}
+    <div class="notice warning"><strong>Model not ready.</strong> Open the VS Code terminal and run <code>python train.py</code>, then restart the app.</div>
+    {% endif %}
+    {% if error %}
+    <div class="notice error">{{ error }}</div>
+    {% endif %}
+
+    <section class="workspace">
+      <div class="form-card">
+        <div class="card-heading">
+          <div><span class="section-kicker">INPUT PARAMETERS</span><h2>Enter dataset values</h2><p>Use values from a sample dataset row for a classroom demo.</p></div>
+          <span class="form-number">01 <span>/ 02</span></span>
+        </div>
+        <form method="POST" action="/">
+          <div class="form-grid">
+            <div class="field"><label for="age">Age <span>years</span></label><input id="age" name="age" type="number" min="18" max="100" required placeholder="e.g. 54" value="{{ values.age }}"></div>
+            <div class="field"><label for="sex">Sex <span>dataset code</span></label><select id="sex" name="sex" required><option value="">Select</option>{% for v,l in options.sex %}<option value="{{v}}" {% if values.sex == v %}selected{% endif %}>{{l}}</option>{% endfor %}</select></div>
+            <div class="field"><label for="cp">Chest pain type <span>category</span></label><select id="cp" name="cp" required><option value="">Select category</option>{% for v,l in options.cp %}<option value="{{v}}" {% if values.cp == v %}selected{% endif %}>{{l}}</option>{% endfor %}</select></div>
+            <div class="field"><label for="trestbps">Resting blood pressure <span>mm Hg</span></label><input id="trestbps" name="trestbps" type="number" min="70" max="250" required placeholder="e.g. 130" value="{{ values.trestbps }}"></div>
+            <div class="field"><label for="chol">Cholesterol <span>mg/dL</span></label><input id="chol" name="chol" type="number" min="80" max="700" required placeholder="e.g. 240" value="{{ values.chol }}"></div>
+            <div class="field"><label for="fbs">Fasting blood sugar > 120 <span>dataset code</span></label><select id="fbs" name="fbs" required><option value="">Select</option>{% for v,l in options.fbs %}<option value="{{v}}" {% if values.fbs == v %}selected{% endif %}>{{l}}</option>{% endfor %}</select></div>
+            <div class="field"><label for="restecg">Resting ECG <span>category</span></label><select id="restecg" name="restecg" required><option value="">Select</option>{% for v,l in options.restecg %}<option value="{{v}}" {% if values.restecg == v %}selected{% endif %}>{{l}}</option>{% endfor %}</select></div>
+            <div class="field"><label for="thalach">Maximum heart rate <span>bpm</span></label><input id="thalach" name="thalach" type="number" min="50" max="250" required placeholder="e.g. 150" value="{{ values.thalach }}"></div>
+            <div class="field"><label for="exang">Exercise-induced angina <span>dataset code</span></label><select id="exang" name="exang" required><option value="">Select</option>{% for v,l in options.exang %}<option value="{{v}}" {% if values.exang == v %}selected{% endif %}>{{l}}</option>{% endfor %}</select></div>
+            <div class="field"><label for="oldpeak">Oldpeak <span>numeric value</span></label><input id="oldpeak" name="oldpeak" type="number" min="0" max="10" step="0.1" required placeholder="e.g. 1.5" value="{{ values.oldpeak }}"></div>
+            <div class="field"><label for="slope">ST slope <span>category</span></label><select id="slope" name="slope" required><option value="">Select</option>{% for v,l in options.slope %}<option value="{{v}}" {% if values.slope == v %}selected{% endif %}>{{l}}</option>{% endfor %}</select></div>
+            <div class="field"><label for="ca">Major vessels <span>0–3</span></label><select id="ca" name="ca" required><option value="">Select</option>{% for v,l in options.ca %}<option value="{{v}}" {% if values.ca == v %}selected{% endif %}>{{l}}</option>{% endfor %}</select></div>
+            <div class="field field-wide"><label for="thal">Thal category <span>dataset code</span></label><select id="thal" name="thal" required><option value="">Select</option>{% for v,l in options.thal %}<option value="{{v}}" {% if values.thal == v %}selected{% endif %}>{{l}}</option>{% endfor %}</select></div>
+          </div>
+          <div class="form-actions"><button class="primary-btn" type="submit" {% if not model_ready %}disabled{% endif %}>Run ML prediction <span>↗</span></button><button class="reset-btn" type="reset">Reset form</button></div>
+        </form>
+      </div>
+
+      <aside class="result-column">
+        <div class="result-card">
+          <div class="result-top"><span class="section-kicker">MODEL OUTPUT</span><span class="result-badge">LIVE DEMO</span></div>
+          {% if result %}
+            <div class="result-symbol {% if result.positive %}symbol-warn{% else %}symbol-calm{% endif %}">{% if result.positive %}⚠{% else %}✓{% endif %}</div>
+            <h2 class="result-title">{{ result.label }}</h2>
+            <p class="result-description">This is the output of a model trained on a limited historical dataset. It cannot determine your actual health status.</p>
+            {% if result.score is not none %}
+            <div class="score-block"><div class="score-label"><span>Model score for positive class</span><strong>{{ result.score }}%</strong></div><div class="score-track"><div class="score-fill" style="width: {{ result.score }}%"></div></div></div>
+            {% endif %}
+            <div class="result-foot">A model score is not a calibrated personal risk percentage.</div>
+          {% else %}
+            <div class="placeholder-art"><div class="pulse-ring ring-one"></div><div class="pulse-ring ring-two"></div><div class="heart-shape">♥</div></div>
+            <h2 class="result-title">Your result appears here</h2>
+            <p class="result-description">Fill out the feature form and run the model to see its educational classification output.</p>
+            <div class="empty-line"><span></span><span></span><span></span></div>
+          {% endif %}
+        </div>
+        <div class="privacy-card"><span class="privacy-icon">⌁</span><div><strong>Local demo · No account</strong><p>Form inputs are processed by this app and are not saved to a database.</p></div></div>
+      </aside>
+    </section>
+    <section class="disclaimer"><span class="disclaimer-icon">ⓘ</span><div><strong>Educational use only — not medical advice</strong><p>This project is for demonstrating machine learning concepts. The dataset is small, old, and limited; outputs may be wrong and are not validated for clinical use. If you have health concerns, contact a qualified healthcare professional.</p></div></section>
+    <footer><a class="brand footer-brand" href="/"><span class="brand-icon">♥</span><span>heart<span class="brand-light">wise</span></span></a><span>Built with Python · Flask · scikit-learn</span><span>Student ML Project</span></footer>
+  </main>
+</body>
+</html>
